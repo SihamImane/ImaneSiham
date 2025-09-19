@@ -20,7 +20,7 @@ class MatierePremiere(models.Model)
     
 
 class UtilisationMatierePremiere(QuantiteMatierePremiere):
-
+    pass
 
 class ApprovisionnementMatierePremiere(QuantiteMatierePremiere):
     localisation = models.CharField(max_lenght=100)
