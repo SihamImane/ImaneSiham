@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from . import models
+
 admin.site.register(models.Localisation)
 admin.site.register(models.Energie)
 admin.site.register(models.DebitEnergie)
@@ -13,4 +14,3 @@ admin.site.register(models.ApprovisionnementMatierePremiere)
 admin.site.register(models.Metier)
 admin.site.register(models.RessourceHumaine)
 admin.site.register(models.Fabrication)
-admin.site.register(models.QuantitéMatierePremiere)
