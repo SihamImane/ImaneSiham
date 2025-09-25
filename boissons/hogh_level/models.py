@@ -6,8 +6,10 @@ class MatierePremiere(models.Model):
     stock = models.IntegerField()
     emprise = models.FloatField()
 
+    def __str__(self):
+        return f"{self.nom} (stock: {self.stock}, emprise: {self.emprise})"
 
-# Create your models here.
+
 class QuantiteMatierePremiere(models.Model):
     quantite = models.IntegerField()
     matiere_premiere = models.ForeignKey(
@@ -20,7 +22,8 @@ class QuantiteMatierePremiere(models.Model):
 
 
 class UtilisationMatierePremiere(QuantiteMatierePremiere):
-    pass
+    def __str__(self):
+        return f"Utilisation {self.quantite} de {self.matiere_premiere.nom}"
 
 
 class ApprovisionnementMatierePremiere(QuantiteMatierePremiere):
@@ -28,11 +31,17 @@ class ApprovisionnementMatierePremiere(QuantiteMatierePremiere):
     prix_unitaire = models.FloatField()
     delais = models.IntegerField()
 
+    def __str__(self):
+        return f"Approvisionnement {self.quantite} {self.matiere_premiere.nom} à {self.localisation}"
+
 
 class Localisation(models.Model):
     nom = models.CharField(max_length=100)
     taxes = models.FloatField()
     prix_m2 = models.FloatField()
+
+    def __str__(self):
+        return f"{self.nom} (taxes: {self.taxes}, prix/m²: {self.prix_m2})"
 
 
 class Energie(models.Model):
@@ -43,6 +52,9 @@ class Energie(models.Model):
         on_delete=models.PROTECT,
     )
 
+    def __str__(self):
+        return f"{self.nom} ({self.prix} €/unité)"
+
 
 class DebitEnergie(models.Model):
     debit = models.FloatField()
@@ -50,6 +62,9 @@ class DebitEnergie(models.Model):
         Energie,
         on_delete=models.PROTECT,
     )
+
+    def __str__(self):
+        return f"{self.debit} unités de {self.energie.nom}"
 
 
 class Local(models.Model):
@@ -59,6 +74,9 @@ class Local(models.Model):
         on_delete=models.PROTECT,
     )
     surface = models.FloatField()
+
+    def __str__(self):
+        return f"{self.nom} ({self.surface} m², {self.localisation.nom})"
 
 
 class Produit(models.Model):
@@ -71,10 +89,16 @@ class Produit(models.Model):
         on_delete=models.PROTECT,
     )
 
+    def __str__(self):
+        return f"{self.nom} (vente: {self.prix_de_vente}€, quantité: {self.quantite})"
+
 
 class Metier(models.Model):
     nom = models.CharField(max_length=100)
     remuneration = models.FloatField()
+
+    def __str__(self):
+        return f"{self.nom} (rémunération: {self.remuneration}€)"
 
 
 class RessourceHumaine(models.Model):
@@ -83,6 +107,9 @@ class RessourceHumaine(models.Model):
         Metier,
         on_delete=models.PROTECT,
     )
+
+    def __str__(self):
+        return f"{self.quantite} x {self.metier.nom}"
 
 
 class Machine(models.Model):
@@ -107,6 +134,9 @@ class Machine(models.Model):
         null=True,
         related_name="+",
     )
+
+    def __str__(self):
+        return f"{self.nom} (prix: {self.prix_achat}€, local: {self.local.nom})"
 
 
 class Fabrication(models.Model):
@@ -135,3 +165,7 @@ class Fabrication(models.Model):
         null=True,
         related_name="+",
     )
+
+    def __str__(self):
+        return f"Fabrication de {self.produit.nom}"
+
