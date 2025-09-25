@@ -34,6 +34,9 @@ class ApprovisionnementMatierePremiere(QuantiteMatierePremiere):
     def __str__(self):
         return f"Approvisionnement {self.quantite} {self.matiere_premiere.nom} à {self.localisation}"
 
+    def costs(self):
+        return self.prix_unitaire * self.quantite
+
 
 class Localisation(models.Model):
     nom = models.CharField(max_length=100)
@@ -66,6 +69,9 @@ class DebitEnergie(models.Model):
     def __str__(self):
         return f"{self.debit} unités de {self.energie.nom}"
 
+    def costs(self):
+        return f"{self.debit * self.energie.prix}"
+
 
 class Local(models.Model):
     nom = models.CharField(max_length=100)
@@ -77,6 +83,9 @@ class Local(models.Model):
 
     def __str__(self):
         return f"{self.nom} ({self.surface} m², {self.localisation.nom})"
+
+    def costs(self):
+        return self.surface * self.localisation.prix_m2
 
 
 class Produit(models.Model):
@@ -111,6 +120,9 @@ class RessourceHumaine(models.Model):
     def __str__(self):
         return f"{self.quantite} x {self.metier.nom}"
 
+    def costs(self):
+        return self.quantite * self.metier.remuneration
+
 
 class Machine(models.Model):
     nom = models.CharField(max_length=100)
@@ -137,6 +149,11 @@ class Machine(models.Model):
 
     def __str__(self):
         return f"{self.nom} (prix: {self.prix_achat}€, local: {self.local.nom})"
+
+    def costs(self):
+        return (
+            self.debit_energie.costs() + self.operateurs.costs() + self.cout_maintenance
+        )
 
 
 class Fabrication(models.Model):
@@ -168,4 +185,3 @@ class Fabrication(models.Model):
 
     def __str__(self):
         return f"Fabrication de {self.produit.nom}"
-
