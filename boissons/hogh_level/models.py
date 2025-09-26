@@ -9,6 +9,9 @@ class MatierePremiere(models.Model):
     def __str__(self):
         return f"{self.nom} (stock: {self.stock}, emprise: {self.emprise})"
 
+    # def json(self):
+    # return
+
 
 class QuantiteMatierePremiere(models.Model):
     quantite = models.IntegerField()
@@ -70,7 +73,7 @@ class DebitEnergie(models.Model):
         return f"{self.debit} unités de {self.energie.nom}"
 
     def costs(self):
-        return f"{self.debit * self.energie.prix}"
+        return self.debit * self.energie.prix
 
 
 class Local(models.Model):
@@ -151,9 +154,10 @@ class Machine(models.Model):
         return f"{self.nom} (prix: {self.prix_achat}€, local: {self.local.nom})"
 
     def costs(self):
-        return (
-            self.debit_energie.costs() + self.operateurs.costs() + self.cout_maintenance
-        )
+        return self.debit_energie.costs() + self.prix_achat
+
+
+"""+ self.operateurs.costs() + self.cout_maintenance"""
 
 
 class Fabrication(models.Model):
