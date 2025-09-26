@@ -17,7 +17,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from hogh_level import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path(
+        "matiere/<int:pk>/", views.MatierePremiereDetailView.as_view(), name="matiere"
+    ),
 ]

@@ -9,8 +9,13 @@ class MatierePremiere(models.Model):
     def __str__(self):
         return f"{self.nom} (stock: {self.stock}, emprise: {self.emprise})"
 
-    # def json(self):
-    # return
+    def json(self):
+        return {
+            "id": self.id,
+            "nom": self.nom,
+            "stock": self.stock,
+            "emprise": self.emprise,
+        }
 
 
 class QuantiteMatierePremiere(models.Model):
@@ -23,10 +28,20 @@ class QuantiteMatierePremiere(models.Model):
     class Meta:
         abstract = True
 
+    def json(self):
+        return {
+            "id": self.id,
+            "quantite": self.quantite,
+            "matiere_premiere": self.matiere_premiere,
+        }
+
 
 class UtilisationMatierePremiere(QuantiteMatierePremiere):
     def __str__(self):
         return f"Utilisation {self.quantite} de {self.matiere_premiere.nom}"
+
+    def json(self):
+        return {"id": self.id}
 
 
 class ApprovisionnementMatierePremiere(QuantiteMatierePremiere):
@@ -40,6 +55,14 @@ class ApprovisionnementMatierePremiere(QuantiteMatierePremiere):
     def costs(self):
         return self.prix_unitaire * self.quantite
 
+    def json(self):
+        return {
+            "id": self.id,
+            "localisation": self.Localisation.json(),
+            "prix_unitaire": self.prix_unitaire,
+            "delais": self.delais,
+        }
+
 
 class Localisation(models.Model):
     nom = models.CharField(max_length=100)
@@ -48,6 +71,14 @@ class Localisation(models.Model):
 
     def __str__(self):
         return f"{self.nom} (taxes: {self.taxes}, prix/m²: {self.prix_m2})"
+
+    def json(self):
+        return {
+            "id": self.id,
+            "nom": self.nom,
+            "taxes": self.taxes,
+            "prix_m2": self.prix_m2,
+        }
 
 
 class Energie(models.Model):
@@ -60,6 +91,9 @@ class Energie(models.Model):
 
     def __str__(self):
         return f"{self.nom} ({self.prix} €/unité)"
+
+    def json(self):
+        return {"id": self.id, "localisation": self.Localisation.json()}
 
 
 class DebitEnergie(models.Model):
@@ -74,6 +108,9 @@ class DebitEnergie(models.Model):
 
     def costs(self):
         return self.debit * self.energie.prix
+
+    def json(self):
+        return {"id": self.id, "debit": self.debit, "energie": self.Energie.json()}
 
 
 class Local(models.Model):
@@ -90,6 +127,13 @@ class Local(models.Model):
     def costs(self):
         return self.surface * self.localisation.prix_m2
 
+    def json(self):
+        return {
+            "id": self.id,
+            "localisation": self.Localisation.json(),
+            "nom": self.nom,
+        }
+
 
 class Produit(models.Model):
     nom = models.CharField(max_length=100)
@@ -104,6 +148,18 @@ class Produit(models.Model):
     def __str__(self):
         return f"{self.nom} (vente: {self.prix_de_vente}€, quantité: {self.quantite})"
 
+    def json(
+        self,
+    ):  # return json.dumps({"id"=self.id, "nom" =self.nom, "prix_de_vente"=self.prix_de_vente, "quantite" =self.quantite, "emprise" = self.emprise,"local" = self.local.id})
+        return {
+            "id": self.id,
+            "nom": self.nom,
+            "prix_de_vente": self.prix_de_vente,
+            "quantite": self.quantite,
+            "emprise": self.emprise,
+            "local": self.Local.id,
+        }
+
 
 class Metier(models.Model):
     nom = models.CharField(max_length=100)
@@ -111,6 +167,9 @@ class Metier(models.Model):
 
     def __str__(self):
         return f"{self.nom} (rémunération: {self.remuneration}€)"
+
+    def json(self):
+        return {"id": self.id, "nom": self.nom, "remuneration": self.remuneration}
 
 
 class RessourceHumaine(models.Model):
@@ -125,6 +184,9 @@ class RessourceHumaine(models.Model):
 
     def costs(self):
         return self.quantite * self.metier.remuneration
+
+    def json(self):
+        return {"id": self.id, "quantite": self.quantite, "metier": self.Metier.json()}
 
 
 class Machine(models.Model):
@@ -150,14 +212,25 @@ class Machine(models.Model):
         related_name="+",
     )
 
-    def __str__(self):
+    def __str__(self):  # """+ self.operateurs.costs() + self.cout_maintenance"""
         return f"{self.nom} (prix: {self.prix_achat}€, local: {self.local.nom})"
 
     def costs(self):
         return self.debit_energie.costs() + self.prix_achat
 
-
-"""+ self.operateurs.costs() + self.cout_maintenance"""
+    def json(self):
+        return {
+            "id": self.id,
+            "nom": self.nom,
+            "prix_achat": self.prix_achat,
+            "cout_maintenance": self.cout_maintenance,
+            "debit": self.debit,
+            "surface": self.surface,
+            "debit_energie": self.DebitEnergie.json(),
+            "taux_utilisation": self.taux_utilisation,
+            "local": self.Local.json(),
+            "operateurs": self.RessourceHumaine.json(),
+        }
 
 
 class Fabrication(models.Model):
@@ -189,3 +262,12 @@ class Fabrication(models.Model):
 
     def __str__(self):
         return f"Fabrication de {self.produit.nom}"
+
+    def json(self):
+        return {
+            "id": self.id,
+            "produit": self.Produit.json(),
+            "utilisation": self.UtilisationMatierePremiere.json(),
+            "machines": self.Machine.json(),
+            "RessourcesHumaines": self.RessourceHumaine.json(),
+        }
