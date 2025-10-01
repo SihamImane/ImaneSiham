@@ -43,8 +43,9 @@ public:
 
 int main() {
 
-  cpr::Response r =
-      cpr::Get(cpr::Url{"http://127.0.0.1:8000/admin/hogh_level/localisation"});
+  cpr::Response r = cpr::Get(cpr::Url{"http://127.0.0.1:8000/localisation/1/"});
+  cout << r.text;
+  // nlohmann:: json data
 
   Localisation objet("Paris", 20, 100);
   objet.afficher();

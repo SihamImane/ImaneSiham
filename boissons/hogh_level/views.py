@@ -23,7 +23,7 @@ class JSONDetailView(DetailView):
 
 
 class LocalisationDetailView(JSONDetailView):
-    Model = Localisation
+    model = Localisation
 
 
 class EnergieDetailView(JSONDetailView):
