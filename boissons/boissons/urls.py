@@ -24,4 +24,7 @@ urlpatterns = [
     path(
         "matiere/<int:pk>/", views.MatierePremiereDetailView.as_view(), name="matiere"
     ),
+    path(
+        "localisation/<int:pk>/", views.LocalisationDetailView.as_view(), name="PARIS"
+    ),
 ]
